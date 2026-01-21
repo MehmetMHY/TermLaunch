@@ -1,8 +1,8 @@
+<h1 align="center">TermLaunch</h1>
+
 <p align="center">
     <img width="200" src="./logo.png">
 </p>
-
-# TermLaunch
 
 ## About
 
@@ -107,7 +107,7 @@ This will create `build/TermLaunch.app`.
 
 ### Generating App Icon
 
-To regenerate the app icon from `logo.png` using the `generate_icon.py` script:
+To regenerate the app icon from `logo.png` using the `iconify.py` script:
 
 1. First, install the Python dependencies from `requirements.txt`:
 
@@ -120,7 +120,7 @@ pip3 install -r requirements.txt
 2. Then run the icon generation script:
 
 ```bash
-python3 generate_icon.py
+python3 iconify.py
 ```
 
 This creates an `AppIcon.icns` file with all required macOS icon sizes and proper padding. The icon is automatically included in the build process.
