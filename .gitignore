@@ -1,0 +1,43 @@
+# macos metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macos system files
+Icon?
+._*
+
+# build products
+build/
+DerivedData/
+*.xcworkspace/
+*.xcodeproj/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+
+# swift / spm
+.build/
+Packages/
+.swiftpm/
+
+# logs & temp
+*.log
+*.swp
+*.tmp
+*.cache
+
+# editors / tooling
+.vscode/
+.idea/
+*.xccheckout
+
+# custom
+.env*
+env/
+venv/
+.claude/
+ch_*
+.archive/
