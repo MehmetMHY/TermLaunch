@@ -51,6 +51,23 @@ uninstall() {
 	fi
 }
 
+# Function to run the app
+run() {
+	pkill -x TermLaunch 2>/dev/null || true
+
+	if [ ! -d "$BUILD_DIR" ]; then
+		echo "Error: $BUILD_DIR directory does not exist. Please build the app first."
+		exit 1
+	fi
+
+	if [ ! -d "$BUILD_APP" ]; then
+		echo "Error: $BUILD_APP not found."
+		exit 1
+	fi
+
+	open "$BUILD_APP"
+}
+
 # Function to display help
 help() {
 	echo "TermLaunch Installation Script"
@@ -60,6 +77,7 @@ help() {
 	echo "Options:"
 	echo "  (no option)      Install TermLaunch"
 	echo "  -u, --uninstall  Uninstall TermLaunch"
+	echo "  -r, --run        Run the built app"
 	echo "  -h, --help       Display this help message"
 }
 
@@ -67,6 +85,9 @@ help() {
 case "${1:-}" in
 -u | --uninstall)
 	uninstall
+	;;
+-r | --run)
+	run
 	;;
 -h | --help)
 	help

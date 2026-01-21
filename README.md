@@ -1,4 +1,8 @@
-# TermLaunch
+<h1 align="center">TermLaunch</h1>
+
+<p align="center">
+    <img width="275" src="./logo.png">
+</p>
 
 ## About
 
@@ -33,6 +37,13 @@ Alternatively, if you want to build without installing:
 
 ```bash
 ./build.sh
+./install.sh -r
+```
+
+Or manually open the app:
+
+```bash
+./build.sh
 open ./build/TermLaunch.app
 ```
 
@@ -52,7 +63,7 @@ TermLaunch will now automatically start whenever you log in.
 
 ### Via Menu
 
-Click the menu bar icon (⌨️) to open the menu:
+Click the app's menu bar icon to open the menu:
 
 - **Shortcut: ⌥ Space**: Shows the hotkey for quick reference
 - **Open**: Opens your selected terminal
@@ -103,7 +114,7 @@ To regenerate the app icon from `logo.png` using the `generate_icon.py` script:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 2. Then run the icon generation script:
@@ -129,18 +140,6 @@ To reinstall after uninstalling:
 ```bash
 ./install.sh -u && ./install.sh
 ```
-
-## Development
-
-The app is implemented in a single file: `TermLaunch/main.swift`
-
-Key components:
-
-- `AppDelegate`: Main application controller
-- `setupMenu()`: Initializes the menu bar menu
-- `registerHotKey()`: Sets up the Option + Space hotkey
-- `openTerminal()`: Opens the selected terminal with appropriate AppleScript
-- `UserDefaults`: Persists terminal selection preference
 
 ## License
 
