@@ -6,11 +6,11 @@ A lightweight macOS menu bar utility to quickly open your favorite terminal appl
 
 ## Features
 
-- **Menu bar icon** - Quick access from anywhere with a click
-- **Global hotkey** - Press `⌥ Space` (Option + Space) to open terminal instantly
-- **Multiple terminal support** - Choose from Terminal, iTerm, Ghostty, Warp, or Kitty
-- **Persistent selection** - Your terminal preference is saved between launches
-- **Minimal footprint** - Runs as an accessory app in the menu bar
+- **Menu bar icon**: Quick access from anywhere with a click
+- **Global hotkey**: Press `⌥ Space` (Option + Space) to open the terminal instantly
+- **Multiple terminal support**: Choose from Terminal, iTerm, Ghostty, Warp, or Kitty
+- **Persistent selection**: Your terminal preference is saved between launches
+- **Minimal footprint**: Runs as an accessory app in the menu bar
 
 ## Installation
 
@@ -19,8 +19,8 @@ A lightweight macOS menu bar utility to quickly open your favorite terminal appl
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/open_terminal_menu_bar_macos.git
-   cd open_terminal_menu_bar_macos
+   git clone https://github.com/MehmetMHY/TermLaunch.git
+   cd TermLaunch
    ```
 
 2. Run the install script:
@@ -29,13 +29,11 @@ A lightweight macOS menu bar utility to quickly open your favorite terminal appl
    ./install.sh
    ```
 
-   This will build the app and install it to `/Applications/`.
-
 Alternatively, if you want to build without installing:
 
 ```bash
 ./build.sh
-open build/TermLaunch.app
+open ./build/TermLaunch.app
 ```
 
 ### Start at Login
@@ -56,10 +54,10 @@ TermLaunch will now automatically start whenever you log in.
 
 Click the menu bar icon (⌨️) to open the menu:
 
-- **Shortcut: ⌥ Space** - Shows the hotkey for quick reference
-- **Open** - Opens your selected terminal
-- **Terminal** - Submenu to select which terminal to use
-- **Quit** - Close the app
+- **Shortcut: ⌥ Space**: Shows the hotkey for quick reference
+- **Open**: Opens your selected terminal
+- **Terminal**: Submenu to select which terminal to use
+- **Quit**: Close the app
 
 ### Via Hotkey
 
@@ -70,21 +68,11 @@ Press `⌥ Space` (Option + Space) at any time to instantly open your selected t
 1. Click the menu bar icon
 2. Hover over "Terminal"
 3. Select your preferred terminal:
-   - Terminal (default macOS Terminal)
+   - Terminal (macOS)
    - iTerm
    - Ghostty
    - Warp
    - Kitty
-
-Your selection is automatically saved and will be used for future launches.
-
-## Supported Terminals
-
-- **Terminal** - Default macOS terminal application
-- **iTerm** - Feature-rich terminal emulator
-- **Ghostty** - Modern terminal emulator
-- **Warp** - AI-powered terminal
-- **Kitty** - GPU-based terminal emulator
 
 ## Requirements
 
@@ -95,8 +83,10 @@ Your selection is automatically saved and will be used for future launches.
 
 The project uses Swift and compiles with the system frameworks:
 
-- Cocoa - macOS user interface
-- Carbon - For global hotkey support
+- Cocoa: macOS user interface
+- Carbon: For global hotkey support
+
+To build it run the following command:
 
 ```bash
 ./build.sh
@@ -106,17 +96,9 @@ This will create `build/TermLaunch.app`.
 
 ### Generating App Icon
 
-The app icon is generated from `logo.png` using the `generate_icon.py` script. To regenerate the icon (for example, if you modify the logo):
+To regenerate the app icon from `logo.png` using the `generate_icon.py` script:
 
-```bash
-python3 generate_icon.py
-```
-
-This creates an `AppIcon.icns` file with all required macOS icon sizes and proper padding. The icon is automatically included in the build process.
-
-### Python Requirements for Icon Generation
-
-To use `generate_icon.py`, install the Python dependencies from `requirements.txt`:
+1. First, install the Python dependencies from `requirements.txt`:
 
 ```bash
 python3 -m venv .venv
@@ -124,20 +106,28 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+2. Then run the icon generation script:
+
+```bash
+python3 generate_icon.py
+```
+
+This creates an `AppIcon.icns` file with all required macOS icon sizes and proper padding. The icon is automatically included in the build process.
+
 ## Uninstalling
 
 To uninstall TermLaunch from `/Applications`:
 
 ```bash
-./uninstall.sh
+./install.sh -u
+# or
+./install.sh --uninstall
 ```
-
-This safely moves the app to Trash instead of permanently deleting it.
 
 To reinstall after uninstalling:
 
 ```bash
-./uninstall.sh && ./install.sh
+./install.sh -u && ./install.sh
 ```
 
 ## Development
@@ -146,8 +136,12 @@ The app is implemented in a single file: `TermLaunch/main.swift`
 
 Key components:
 
-- `AppDelegate` - Main application controller
-- `setupMenu()` - Initializes the menu bar menu
-- `registerHotKey()` - Sets up the Option + Space hotkey
-- `openTerminal()` - Opens the selected terminal with appropriate AppleScript
-- `UserDefaults` - Persists terminal selection preference
+- `AppDelegate`: Main application controller
+- `setupMenu()`: Initializes the menu bar menu
+- `registerHotKey()`: Sets up the Option + Space hotkey
+- `openTerminal()`: Opens the selected terminal with appropriate AppleScript
+- `UserDefaults`: Persists terminal selection preference
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
