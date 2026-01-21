@@ -12,7 +12,8 @@ A lightweight macOS menu bar utility to quickly open your favorite terminal appl
 
 - **Menu bar icon**: Quick access from anywhere with a click
 - **Global hotkey**: Press `⌥ Space` (Option + Space) to open the terminal instantly
-- **Multiple terminal support**: Choose from Terminal, iTerm, Ghostty, Warp, or Kitty
+- **Multiple terminal support**: Auto-detects and supports popular terminals
+- **Automatic detection**: Only installed terminals appear in the menu alongside the default macOS Terminal
 - **Persistent selection**: Your terminal preference is saved between launches
 - **Minimal footprint**: Runs as an accessory app in the menu bar
 
@@ -90,12 +91,9 @@ Press `⌥ Space` (Option + Space) at any time to instantly open your selected t
 
 1. Click the menu bar icon
 2. Hover over "Terminal"
-3. Select your preferred terminal:
-   - Terminal (macOS)
-   - iTerm
-   - Ghostty
-   - Warp
-   - Kitty
+3. Select your preferred terminal from the installed options
+
+Terminal (macOS) is always available as a fallback. Only terminals installed on your system will appear in the menu.
 
 ## Requirements
 

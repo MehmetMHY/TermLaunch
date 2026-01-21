@@ -2,18 +2,115 @@ import Carbon
 import Cocoa
 import QuartzCore
 
+struct TerminalApp {
+  let name: String
+  let bundleId: String
+  let launchScript: String
+
+  var isInstalled: Bool {
+    NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) != nil
+  }
+}
+
 class AppDelegate: NSObject, NSApplicationDelegate {
   var statusItem: NSStatusItem!
   var hotKeyRef: EventHotKeyRef?
   var menu: NSMenu!
   var animationTimer: Timer?
 
-  let terminalApps = ["Terminal", "iTerm", "Ghostty", "Warp", "Kitty"]
+  let terminalApps: [TerminalApp] = [
+    TerminalApp(
+      name: "Terminal",
+      bundleId: "com.apple.Terminal",
+      launchScript: """
+        tell application "Terminal"
+            activate
+            do script ""
+        end tell
+        tell application "System Events"
+            set frontmost of process "Terminal" to true
+        end tell
+        """
+    ),
+    TerminalApp(
+      name: "iTerm",
+      bundleId: "com.googlecode.iterm2",
+      launchScript: """
+        tell application "iTerm"
+            activate
+            create window with default profile
+        end tell
+        """
+    ),
+    TerminalApp(
+      name: "Ghostty",
+      bundleId: "com.mitchellh.ghostty",
+      launchScript: """
+        tell application "Ghostty"
+            activate
+        end tell
+        """
+    ),
+    TerminalApp(
+      name: "Warp",
+      bundleId: "dev.warp.Warp",
+      launchScript: """
+        tell application "Warp"
+            activate
+        end tell
+        """
+    ),
+    TerminalApp(
+      name: "Kitty",
+      bundleId: "net.kovidgoyal.kitty",
+      launchScript: """
+        do shell script "open -na kitty"
+        """
+    ),
+    TerminalApp(
+      name: "Alacritty",
+      bundleId: "org.alacritty",
+      launchScript: """
+        do shell script "open -na Alacritty"
+        """
+    ),
+    TerminalApp(
+      name: "Hyper",
+      bundleId: "co.zeit.hyper",
+      launchScript: """
+        tell application "Hyper"
+            activate
+        end tell
+        """
+    ),
+    TerminalApp(
+      name: "WezTerm",
+      bundleId: "com.github.wez.wezterm",
+      launchScript: """
+        do shell script "open -na WezTerm"
+        """
+    ),
+    TerminalApp(
+      name: "Tabby",
+      bundleId: "org.tabby",
+      launchScript: """
+        tell application "Tabby"
+            activate
+        end tell
+        """
+    ),
+  ]
+
   let selectedTerminalKey = "selectedTerminal"
 
   var selectedTerminal: String {
     get {
-      UserDefaults.standard.string(forKey: selectedTerminalKey) ?? "Terminal"
+      let saved = UserDefaults.standard.string(forKey: selectedTerminalKey) ?? "Terminal"
+      // If saved terminal is not installed, fall back to first installed one
+      if let terminal = terminalApps.first(where: { $0.name == saved }), terminal.isInstalled {
+        return saved
+      }
+      return terminalApps.first(where: { $0.isInstalled })?.name ?? "Terminal"
     }
     set {
       UserDefaults.standard.set(newValue, forKey: selectedTerminalKey)
@@ -52,14 +149,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let terminalMenuItem = NSMenuItem(title: "Terminal", action: nil, keyEquivalent: "")
     let terminalSubmenu = NSMenu()
 
-    for terminal in terminalApps {
+    for terminal in terminalApps where terminal.isInstalled || terminal.name == "Terminal" {
       let item = NSMenuItem(
-        title: terminal, action: #selector(selectTerminal(_:)), keyEquivalent: "")
+        title: terminal.name, action: #selector(selectTerminal(_:)), keyEquivalent: "")
       item.target = self
-      item.representedObject = terminal
-      if terminal == selectedTerminal {
+      item.representedObject = terminal.name
+
+      if terminal.name == selectedTerminal {
         item.state = .on
       }
+
       terminalSubmenu.addItem(item)
     }
 
@@ -119,45 +218,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   @objc func openTerminal() {
     animateMenuBarIcon()
 
-    let script: String
+    guard let terminal = terminalApps.first(where: { $0.name == selectedTerminal }) else { return }
 
-    switch selectedTerminal {
-    case "iTerm":
-      script = """
-        tell application "iTerm"
-            activate
-            create window with default profile
-        end tell
-        """
-    case "Ghostty":
-      script = """
-        tell application "Ghostty"
-            activate
-        end tell
-        """
-    case "Warp":
-      script = """
-        tell application "Warp"
-            activate
-        end tell
-        """
-    case "Kitty":
-      script = """
-        do shell script "open -na kitty"
-        """
-    default:  // Terminal
-      script = """
-        tell application "Terminal"
-            activate
-            do script ""
-        end tell
-        tell application "System Events"
-            set frontmost of process "Terminal" to true
-        end tell
-        """
-    }
-
-    if let appleScript = NSAppleScript(source: script) {
+    if let appleScript = NSAppleScript(source: terminal.launchScript) {
       var error: NSDictionary?
       appleScript.executeAndReturnError(&error)
     }
@@ -192,21 +255,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
       guard let self = self else { return }
 
-      let terminal = self.selectedTerminal
-      let bundleIds: [String: String] = [
-        "Terminal": "com.apple.Terminal",
-        "iTerm": "com.googlecode.iterm2",
-        "Ghostty": "com.mitchellh.ghostty",
-        "Warp": "dev.warp.Warp",
-        "Kitty": "net.kovidgoyal.kitty",
-      ]
+      guard let terminal = self.terminalApps.first(where: { $0.name == self.selectedTerminal })
+      else { return }
 
-      if let bundleId = bundleIds[terminal] {
-        let runningApps = NSWorkspace.shared.runningApplications
-        if runningApps.contains(where: { $0.bundleIdentifier == bundleId && $0.isActive }) {
-          // Terminal is running and active, stop animation
-          self.stopAnimation()
-        }
+      let runningApps = NSWorkspace.shared.runningApplications
+      if runningApps.contains(where: { $0.bundleIdentifier == terminal.bundleId && $0.isActive }) {
+        // Terminal is running and active, stop animation
+        self.stopAnimation()
       }
     }
   }
