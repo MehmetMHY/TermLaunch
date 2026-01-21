@@ -1,10 +1,12 @@
 import Carbon
 import Cocoa
+import QuartzCore
 
 class AppDelegate: NSObject, NSApplicationDelegate {
   var statusItem: NSStatusItem!
   var hotKeyRef: EventHotKeyRef?
   var menu: NSMenu!
+  var animationTimer: Timer?
 
   let terminalApps = ["Terminal", "iTerm", "Ghostty", "Warp", "Kitty"]
   let selectedTerminalKey = "selectedTerminal"
@@ -115,6 +117,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   @objc func openTerminal() {
+    animateMenuBarIcon()
+
     let script: String
 
     switch selectedTerminal {
@@ -156,6 +160,67 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     if let appleScript = NSAppleScript(source: script) {
       var error: NSDictionary?
       appleScript.executeAndReturnError(&error)
+    }
+  }
+
+  func animateMenuBarIcon() {
+    guard let button = statusItem.button else { return }
+
+    // Enable layer backing for Core Animation
+    button.wantsLayer = true
+
+    // Create opacity pulse animation (slower and repeating)
+    let animation = CABasicAnimation(keyPath: "opacity")
+    animation.fromValue = 1.0
+    animation.toValue = 0.4
+    animation.duration = 0.5  // Slower animation
+    animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+    animation.repeatCount = .infinity  // Repeat until we stop it
+    animation.autoreverses = true
+
+    button.layer?.add(animation, forKey: "pulse")
+
+    // Start checking if terminal has opened
+    startCheckingForTerminal()
+  }
+
+  func startCheckingForTerminal() {
+    // Cancel any existing timer
+    animationTimer?.invalidate()
+
+    // Check every 0.5 seconds if terminal app is running and in focus
+    animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+      guard let self = self else { return }
+
+      let terminal = self.selectedTerminal
+      let bundleIds: [String: String] = [
+        "Terminal": "com.apple.Terminal",
+        "iTerm": "com.googlecode.iterm2",
+        "Ghostty": "com.mitchellh.ghostty",
+        "Warp": "dev.warp.Warp",
+        "Kitty": "net.kovidgoyal.kitty",
+      ]
+
+      if let bundleId = bundleIds[terminal] {
+        let runningApps = NSWorkspace.shared.runningApplications
+        if runningApps.contains(where: { $0.bundleIdentifier == bundleId && $0.isActive }) {
+          // Terminal is running and active, stop animation
+          self.stopAnimation()
+        }
+      }
+    }
+  }
+
+  func stopAnimation() {
+    animationTimer?.invalidate()
+    animationTimer = nil
+
+    guard let button = statusItem.button else { return }
+    button.layer?.removeAnimation(forKey: "pulse")
+
+    // Reset opacity to normal
+    if let layer = button.layer {
+      layer.opacity = 1.0
     }
   }
 }

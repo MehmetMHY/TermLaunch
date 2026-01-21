@@ -47,6 +47,18 @@ Or manually open the app:
 open ./build/TermLaunch.app
 ```
 
+### Updating
+
+To update TermLaunch to the latest build:
+
+```bash
+./install.sh -u
+# or
+./install.sh --update
+```
+
+The app will automatically restart if it was running before the update.
+
 ### Start at Login
 
 To have TermLaunch automatically open when you log in:
@@ -130,7 +142,7 @@ This creates an `AppIcon.icns` file with all required macOS icon sizes and prope
 To uninstall TermLaunch from `/Applications`:
 
 ```bash
-./install.sh -u
+./install.sh -d
 # or
 ./install.sh --uninstall
 ```
@@ -138,7 +150,7 @@ To uninstall TermLaunch from `/Applications`:
 To reinstall after uninstalling:
 
 ```bash
-./install.sh -u && ./install.sh
+./install.sh -d && ./install.sh
 ```
 
 ## License
